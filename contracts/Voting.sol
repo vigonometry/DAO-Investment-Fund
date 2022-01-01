@@ -236,7 +236,7 @@ contract Voting{
         } else {
             p.votesAgainst.push(voteData);
         }
-        lumidao._transfer(msg.sender, tx.origin, _weight);
+        lumidao._transferToken(msg.sender, tx.origin, _weight);
         emit castVote(
             voteData
         );      
