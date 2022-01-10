@@ -5,11 +5,10 @@ import "@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./Token.sol";
 
 contract TokenPool is ERC20, ERC20Permit, ERC20Votes, Ownable {
     using Math for uint256;
-    address[] internal stakeholders;
+    address[] public stakeholders;
     mapping (address => bool) public admins;
     
     mapping (address => uint) internal balances;
@@ -36,10 +35,17 @@ contract TokenPool is ERC20, ERC20Permit, ERC20Votes, Ownable {
         super._burn(account, amount);
     }
 
-    modifier onlyAdmins(address[] calldata _addresses) {
-        for (uint i = 0; i < _addresses.length; i++) {
-            require(admins[_addresses[i]] == true);
-        }
+    function transferFrom(
+        address sender,
+        address recipient,
+        uint256 amount
+    ) public override returns (bool) {
+        super.transferFrom(sender, recipient, amount);
+    }
+
+
+    modifier onlyAdmins(address _admin) {
+        require(admins[_admin] == true, "User is not an admin");
         _;
     }
 

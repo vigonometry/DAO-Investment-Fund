@@ -10,6 +10,7 @@ import "./TokenPool.sol";
 contract LumiDAOToken is TokenPool{
     event deposit(uint256 value);
     event withdraw(uint256 value);
+    TokenPool public tokenPool;
 
     modifier hasBalance(uint256 amount) {
         require(balances[msg.sender] >= amount);
@@ -32,16 +33,16 @@ contract LumiDAOToken is TokenPool{
         return balances[sender];
     }
 
-    function depositToken(address[] calldata _admins, uint256 amount) public onlyAdmins(_admins) {
+    function depositToken(address[] memory _admins, uint256 amount) public onlyAdmins(msg.sender) {
         for (uint i = 0; i < _admins.length; i++) {
             balances[_admins[i]] += amount;
         }
     }
 
-    function rewardUser(address _stakeholder, uint256 rewardAmount) public onlyOwner returns (uint) {
-        balances[_stakeholder] = balances[_stakeholder] + rewardAmount;
-        return balances[_stakeholder];
+    function rewardUser(address _stakeholder, uint256 rewardAmount) public onlyOwner returns (bool) {
+        tokenPool.transferFrom(msg.sender, _stakeholder, rewardAmount);
     }
+    
 
     function balance() public view returns (uint) {
         return balances[msg.sender];
